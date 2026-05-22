@@ -25,7 +25,7 @@ app = FastAPI(lifespan=lifespan)
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# ---------------- CORS ----------------
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,15 +34,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -------- ROUTES ---------
 app.include_router(router)
 
-# ------- HOME ----------
 @app.get("/")
 def home():
     return {"message": "FastAPI Running"}
 
-# ------- FILE UPLOAD --------
 @app.post("/upload/single")
 async def upload_single_file(file: UploadFile = File(...)):
     file_location = os.path.join(UPLOAD_DIR, file.filename)
@@ -57,7 +54,6 @@ async def upload_single_file(file: UploadFile = File(...)):
         "saved_at": file_location
     }
 
-# ------- FILE DOWNLOAD ---------
 @app.get("/download/{filename}")
 async def download_file(filename: str):
     file_path = os.path.join(UPLOAD_DIR, filename)
@@ -71,7 +67,6 @@ async def download_file(filename: str):
         filename=filename
     )
 
-# ---------------- AUTH CONFIG ----------------
 SECRET_KEY = "mysecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
@@ -79,17 +74,14 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
-# ✅ Temporary DB (memory)
 users_db = {}
 
-# ------ PASSWORD -------
 def hash_password(password: str):
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
-# ------ TOKEN ---------
 def create_access_token(data: dict):
     to_encode = data.copy()
 
@@ -127,9 +119,7 @@ def save_log(message: str):
     with open("log.txt", "a") as f:
         f.write(message + "\n")
 
-# ------ AUTH ROUTES-------
 
-# REGISTER
 @app.post("/register")
 def register(username: str = Form(...), password: str = Form(...)):
     if username in users_db:
@@ -139,7 +129,6 @@ def register(username: str = Form(...), password: str = Form(...)):
 
     return {"message": "User created successfully"}
 
-# LOGIN
 @app.post("/login")
 def login(username: str = Form(...), password: str = Form(...)):
     stored = users_db.get(username)
@@ -155,7 +144,6 @@ def login(username: str = Form(...), password: str = Form(...)):
         "refresh_token": create_refresh_token({"sub": username})
     }
 
-# REFRESH
 @app.post("/refresh")
 def refresh(refresh_token: str = Form(...)):
     payload = decode_token(refresh_token)
@@ -167,7 +155,6 @@ def refresh(refresh_token: str = Form(...)):
         "access_token": create_access_token({"sub": payload["sub"]})
     }
 
-# PROTECTED
 @app.get("/protected")
 def protected(token: str):
     payload = decode_token(token)
