@@ -5,7 +5,7 @@ export const useJobs = ({ search, page }) => {
   return useQuery({
     queryKey: ["jobs", search, page],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:8000/jobs", {
+      const res = await axios.get("http://localhost:8000/jobs/", {
         params: {
           search: search,
           page: page,
