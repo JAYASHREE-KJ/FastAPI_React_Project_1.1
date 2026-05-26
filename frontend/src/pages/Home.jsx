@@ -1,29 +1,24 @@
 import React, { useState } from "react";
 
-import { useJobs } from "../hooks/useJobs";
+import { useJobSearch } from "../hooks/useJobSearch";
+
 
 import SearchBar from "../components/SearchBar";
 import JobForm from "../components/JobForm";
 import JobList from "../components/JobList";
 
 export default function Home() {
-
-  const [search, setSearch] = useState("");
-
-  const [page, setPage] = useState(1);
-
-  const {
-    data,
+  
+const {
+    search,
+    setSearch,
+    page,
+    setPage,
+    jobs,
+    totalPages,
     isLoading,
     error,
-  } = useJobs({
-    search,
-    page
-  });
-
-  const jobs = data?.jobs || [];
-
-  const totalPages = data?.totalPages || 1;
+  } = useJobSearch();
 
 
   return (

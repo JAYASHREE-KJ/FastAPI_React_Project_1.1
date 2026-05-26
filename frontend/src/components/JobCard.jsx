@@ -1,15 +1,30 @@
 import React, { useState } from "react";
-
 import { useDeleteJob } from "../hooks/useDeleteJob";
 import { useUpdateJob } from "../hooks/useUpdateJob";
 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../components/ui/card";
+
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../components/ui/select";
+
 export default function JobCard({ job }) {
   const deleteMutation = useDeleteJob();
-
   const updateMutation = useUpdateJob();
 
-  const [isEditing, setIsEditing] =
-    useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [editData, setEditData] = useState({
     company: job.company,
@@ -30,85 +45,124 @@ export default function JobCard({ job }) {
       id: job.id,
       data: editData,
     });
-
     setIsEditing(false);
   };
 
   return (
-    <div className="card">
-      {isEditing ? (
-        <>
-          <input
-            type="text"
-            name="company"
-            value={editData.company}
-            onChange={handleChange}
-          />
 
-          <input
-            type="text"
-            name="role"
-            value={editData.role}
-            onChange={handleChange}
-          />
+<Card className="w-full max-w-2xl mx-auto mt-4 rounded-2xl shadow-lg
+!bg-gradient-to-r from-[#764ba2] via-[#6a4fb3] to-[#5d4aa8] text-white">
 
-          <select
-            name="status"
-            value={editData.status}
-            onChange={handleChange}
-          >
-            <option>Applied for role</option>
-            <option>Interview scheduled</option>
-            <option>Rejected</option>
-            <option>Offer</option>
-          </select>
+<CardHeader>
+        <CardTitle className="text-lg font-semibold">
+          {isEditing ? "Edit Job" : job.company}
+        </CardTitle>
+      </CardHeader>
 
-          <input
-            type="date"
-            name="applied_date"
-            value={editData.applied_date}
-            onChange={handleChange}
-          />
+      <CardContent className="space-y-4">
+        {isEditing ? (
+          <div className="space-y-3">
+            {/* Company */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Company</label>
+              <Input
+                name="company"
+                value={editData.company}
+                onChange={handleChange}
+              />
+            </div>
 
-          <button onClick={handleUpdate}>
-            Save
-          </button>
+            {/* Role */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Role</label>
+              <Input
+                name="role"
+                value={editData.role}
+                onChange={handleChange}
+              />
+            </div>
 
-          <button
-            onClick={() =>
-              setIsEditing(false)
-            }
-          >
-            Cancel
-          </button>
-        </>
-      ) : (
-        <>
-          <h3>{job.company}</h3>
+            {/* Status */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Status</label>
+              <Select
+                value={editData.status}
+                onValueChange={(value) =>
+                  setEditData({ ...editData, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Applied">Applied</SelectItem>
+                  <SelectItem value="Interview">Interview</SelectItem>
+                  <SelectItem value="Rejected">Rejected</SelectItem>
+                  <SelectItem value="Offer">Offer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <p>Role: {job.role}</p>
+            {/* Date */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Applied Date</label>
+              <Input
+                type="date"
+                name="applied_date"
+                value={editData.applied_date}
+                onChange={handleChange}
+              />
+            </div>
 
-          <p>Status: {job.status}</p>
+            {/* Buttons */}
+            <div className="flex justify-end gap-2 pt-2">
+              <Button onClick={handleUpdate}>
+                Save
+              </Button>
 
-          <p>Date: {job.applied_date}</p>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <p>
+              <span className="font-medium">Role:</span>{" "}
+              {job.role}
+            </p>
 
-          <button
-            onClick={() =>
-              setIsEditing(true)
-            }
-          >
-            Edit
-          </button>
+            <p>
+              <span className="font-medium">Status:</span>{" "}
+              {job.status}
+            </p>
 
-          <button
-            onClick={() =>
-              deleteMutation.mutate(job.id)
-            }
-          >
-            Delete
-          </button>
-        </>
-      )}
-    </div>
+            <p>
+              <span className="font-medium">Date:</span>{" "}
+              {job.applied_date}
+            </p>
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-2 pt-3">
+              <Button onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
+
+              <Button
+                variant="bg-white/20 text-white border border-white/30 hover:bg-white/30"
+                onClick={() =>
+                  deleteMutation.mutate(job.id)
+                }
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
