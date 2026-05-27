@@ -1,0 +1,30 @@
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+
+# Root environment files
+.env
+.env.local
+.env.*.local
+
+# Node modules (frontend)
+node_modules/
+
+# Python virtual environments
+venv/
+.venv/
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# OS generated files
+*.swp
+
+# Temporary
+tmp/
